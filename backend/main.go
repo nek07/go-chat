@@ -4,10 +4,23 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/nek07/go-chat/backend/pkg/websocket"
+	"github.com/nek07/go-chat/backend/websocket"
 )
 
 func serveWS(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
+	fmt.Println("websocket endpoint reached")
+
+	conn, err := websocket.Upgrade(w, r)
+
+	if err != nil {
+		fmt.Println(w, "%+v\n", err)
+	}
+	client := &websocket.Client{
+		Conn: conn,
+		Pool: pool,
+	}
+	pool.Register <- client
+	client.Read()
 
 }
 func setupRoutes() {
